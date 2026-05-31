@@ -27,6 +27,24 @@ label{display:block;font-size:.74rem;color:var(--muted);margin-bottom:5px;margin
 .al-ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.35);color:#86efac}
 .al-er{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#fca5a5}
 .step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;flex-shrink:0}
+/* ===== Optimisation tablette & téléphone ===== */
+@media(max-width:900px){.wrap{padding:14px}}
+@media(max-width:560px){
+  .wrap{padding:11px}
+  h1{font-size:1.7rem!important}
+  .card{padding:14px}
+  .btn-gold{padding:14px 22px;width:100%;text-align:center}
+  .btn-ghost{padding:13px 18px;width:100%;text-align:center}
+  .hero-btns{flex-direction:column}
+  .step-txt{display:none}            /* libère de la place : on garde les pastilles */
+  .step-dot{width:24px;height:24px;font-size:.72rem}
+  .stat-row{gap:18px!important}
+  input,select,textarea{font-size:16px}  /* évite le zoom auto iOS */
+  .recap-grid{grid-template-columns:1fr!important}
+}
+/* zones tactiles confortables */
+button,a.card,.svc{-webkit-tap-highlight-color:transparent}
+button{min-height:42px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -46,7 +64,7 @@ label{display:block;font-size:.74rem;color:var(--muted);margin-bottom:5px;margin
       <h1 style="font-size:2.3rem;font-weight:900;margin-bottom:12px;line-height:1.1">Votre chauffeur exécutif<br><span style="background:linear-gradient(90deg,#F5A623,#ffd479);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">à Bucarest</span></h1>
       <p style="color:#aab2c0;margin-bottom:24px;max-width:520px;margin-left:auto;margin-right:auto">Transferts aéroport, missions corporate et livraisons express.<br>Discrétion absolue · Ponctualité garantie · Facturation entreprise.</p>
       <button class="btn-gold" onclick="document.getElementById('book').scrollIntoView({behavior:'smooth'})">✈️ Réserver en 2 minutes</button>
-      <div style="display:flex;gap:30px;justify-content:center;flex-wrap:wrap;margin-top:30px;padding-top:22px;border-top:1px solid rgba(255,255,255,.08)">
+      <div class="stat-row" style="display:flex;gap:30px;justify-content:center;flex-wrap:wrap;margin-top:30px;padding-top:22px;border-top:1px solid rgba(255,255,255,.08)">
         <div><div style="font-size:1.4rem;font-weight:900;color:var(--accent)">24/7</div><div style="font-size:.62rem;color:#7a8290;text-transform:uppercase">Disponibilité</div></div>
         <div><div style="font-size:1.4rem;font-weight:900;color:var(--accent)">10 min</div><div style="font-size:.62rem;color:#7a8290;text-transform:uppercase">Avance garantie</div></div>
         <div><div style="font-size:1.4rem;font-weight:900;color:var(--accent)">100%</div><div style="font-size:.62rem;color:#7a8290;text-transform:uppercase">Facturable B2B</div></div>
@@ -63,23 +81,29 @@ label{display:block;font-size:.74rem;color:var(--muted);margin-bottom:5px;margin
     <div class="card svc" onclick="pickService('colis')"><div style="font-size:2rem">📦</div><div style="font-weight:700;margin:6px 0">Livraison Express</div><div style="color:var(--muted);font-size:.76rem">Documents & colis urgents, &lt; 2h intra-Bucarest.</div><div style="color:var(--accent);font-weight:700;font-size:.82rem;margin-top:8px">dès 60 RON</div></div>
   </div>
 
-  <!-- FLOTTE -->
-  <div style="text-align:center;margin-bottom:12px"><span style="color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:2px;font-weight:600">Notre flotte premium</span></div>
-  <div class="g3" style="margin-bottom:22px">
-    <div class="card"><div style="font-size:1.7rem">🚗</div><div style="font-weight:700;margin:5px 0">Berline Exécutive</div><div style="color:var(--muted);font-size:.74rem">Mercedes E / BMW 5 / Audi A6 · 3 pax</div><div style="margin-top:8px"><span class="bd">Wifi</span><span class="bd">Eau</span><span class="bd">Chargeurs</span></div></div>
-    <div class="card"><div style="font-size:1.7rem">🚙</div><div style="font-weight:700;margin:5px 0">SUV Premium</div><div style="color:var(--muted);font-size:.74rem">Mercedes GLE / BMW X5 · 4 pax · OTP famille</div><div style="margin-top:8px"><span class="bd">Espace +</span><span class="bd">Cuir</span><span class="bd">Discrétion</span></div></div>
-    <div class="card"><div style="font-size:1.7rem">🚐</div><div style="font-weight:700;margin:5px 0">Van VIP</div><div style="color:var(--muted);font-size:.74rem">Mercedes Classe V · 7 pax · délégations</div><div style="margin-top:8px"><span class="bd">7 places</span><span class="bd">Groupes</span><span class="bd">Bagages XL</span></div></div>
+  <!-- NOTRE VÉHICULE -->
+  <div style="text-align:center;margin-bottom:12px"><span style="color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:2px;font-weight:600">Notre véhicule</span></div>
+  <div class="card" style="margin-bottom:22px;display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+    <div style="font-size:3.2rem;line-height:1">🚙</div>
+    <div style="flex:1;min-width:220px">
+      <div style="font-weight:800;font-size:1.1rem">Renault Kadjar — SUV</div>
+      <div style="color:var(--muted);font-size:.8rem;margin:5px 0 11px">SUV confortable et discret · jusqu'à <strong>4 passagers</strong> · grand coffre idéal transferts aéroport · entretien suivi, propreté irréprochable.</div>
+      <div>
+        <span class="bd">Climatisation</span><span class="bd">Eau offerte</span><span class="bd">Chargeurs USB</span>
+        <span class="bd">Wifi à bord</span><span class="bd">Coffre XL (bagages)</span><span class="bd">Sièges confort</span>
+      </div>
+    </div>
   </div>
 
   <!-- RÉSERVATION -->
   <div class="card" id="book" style="margin-bottom:22px;border-color:rgba(245,166,35,.2)">
     <div style="font-weight:700;font-size:1rem;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)">📋 Réservation</div>
     <div style="display:flex;align-items:center;margin-bottom:20px">
-      <div style="display:flex;align-items:center;gap:7px"><div id="d1" class="step-dot" style="background:var(--accent);color:#000">1</div><span style="font-size:.76rem;font-weight:600">Trajet</span></div>
+      <div style="display:flex;align-items:center;gap:7px"><div id="d1" class="step-dot" style="background:var(--accent);color:#000">1</div><span class="step-txt" style="font-size:.76rem;font-weight:600">Trajet</span></div>
       <div style="flex:1;height:2px;background:var(--border);margin:0 8px" id="l1"></div>
-      <div style="display:flex;align-items:center;gap:7px;opacity:.45" id="w2"><div id="d2" class="step-dot" style="background:var(--bg3);border:2px solid var(--border);color:var(--muted)">2</div><span style="font-size:.76rem;font-weight:600">Contact</span></div>
+      <div style="display:flex;align-items:center;gap:7px;opacity:.45" id="w2"><div id="d2" class="step-dot" style="background:var(--bg3);border:2px solid var(--border);color:var(--muted)">2</div><span class="step-txt" style="font-size:.76rem;font-weight:600">Contact</span></div>
       <div style="flex:1;height:2px;background:var(--border);margin:0 8px" id="l2"></div>
-      <div style="display:flex;align-items:center;gap:7px;opacity:.45" id="w3"><div id="d3" class="step-dot" style="background:var(--bg3);border:2px solid var(--border);color:var(--muted)">3</div><span style="font-size:.76rem;font-weight:600">Confirmation</span></div>
+      <div style="display:flex;align-items:center;gap:7px;opacity:.45" id="w3"><div id="d3" class="step-dot" style="background:var(--bg3);border:2px solid var(--border);color:var(--muted)">3</div><span class="step-txt" style="font-size:.76rem;font-weight:600">Confirmation</span></div>
     </div>
 
     <div id="s1">
@@ -133,7 +157,7 @@ label{display:block;font-size:.74rem;color:var(--muted);margin-bottom:5px;margin
     <div class="card" style="text-align:center"><div style="font-size:1.3rem">✉️</div><div style="font-size:.7rem;color:var(--muted)">Email</div><div style="font-weight:700;font-size:.85rem">contact@executransit.ro</div></div>
     <div class="card" style="text-align:center"><div style="font-size:1.3rem">📍</div><div style="font-size:.7rem;color:var(--muted)">Zone</div><div style="font-weight:700;font-size:.85rem">Bucarest & Roumanie</div></div>
   </div>
-  <div style="text-align:center;color:var(--muted);font-size:.7rem;padding-bottom:20px">TX EXECUTRANSIT · Premium Transport Bucarest · © 2026</div>
+  <div style="text-align:center;color:var(--muted);font-size:.7rem;padding-bottom:20px">TX EXECUTRANSIT · Premium Transport Bucarest · © 2026 &nbsp;·&nbsp; <a href="admin.html" style="color:#3a414f;text-decoration:none">Espace Pro 🔐</a></div>
 </div>
 </div>
 
@@ -177,7 +201,7 @@ function goStep(n){
     if(!g('b-nom').value||!g('b-email').value||!g('b-tel').value){alert('Nom, email et téléphone obligatoires.');return;}
     data.nom=g('b-nom').value;data.soc=g('b-soc').value;data.email=g('b-email').value;data.tel=g('b-tel').value;
     const lbl={aeroport:'✈️ Transfert Aéroport',horaire:'🏢 Transport Corporatif',interurbain:'🛣️ Interurbain',colis:'📦 Livraison Colis'};
-    g('b-recap').innerHTML='<div style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px">'+
+    g('b-recap').innerHTML='<div class="recap-grid" style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px">'+
       '<span style="color:var(--muted)">Prestation</span><strong>'+lbl[data.type]+'</strong>'+
       '<span style="color:var(--muted)">Date</span><strong>'+data.date+' à '+data.time+'</strong>'+
       '<span style="color:var(--muted)">Départ</span><strong>'+data.dep+'</strong>'+

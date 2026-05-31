@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#08090d">
+<title>EXECUTRANSIT — Administration</title>
+<style>
+:root{--bg:#08090d;--bg2:#0e1018;--bg3:#141720;--card:#191c28;--border:#232840;--accent:#F5A623;--green:#10b981;--orange:#f59e0b;--red:#ef4444;--text:#e7ebf0;--muted:#8a93a3}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.45;padding-bottom:72px}
+.wrap{max-width:760px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
+input,select,textarea{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:11px 12px;border-radius:9px;font-size:16px;outline:none}
+input:focus,select:focus{border-color:var(--accent)}
+label{display:block;font-size:.72rem;color:var(--muted);margin:8px 0 4px}
+.btn{background:var(--accent);color:#000;font-weight:800;padding:12px 16px;border:none;border-radius:9px;cursor:pointer;font-size:.86rem;min-height:44px}
+.btn-sm{padding:7px 11px;font-size:.74rem;border-radius:7px;min-height:0;font-weight:700;cursor:pointer;border:none}
+.btn-ghost{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.btn-green{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.btn-gold2{background:rgba(245,166,35,.14);color:var(--accent);border:1px solid rgba(245,166,35,.3)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px}
+.kpi .v{font-size:1.5rem;font-weight:900;line-height:1}
+.kpi .l{font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
+.bd{display:inline-block;padding:2px 8px;border-radius:9px;font-size:.66rem;font-weight:700}
+.b-b{background:rgba(59,130,246,.18);color:#93c5fd}.b-o{background:rgba(245,158,11,.18);color:#fcd34d}.b-g{background:rgba(16,185,129,.18);color:#86efac}.b-r{background:rgba(239,68,68,.18);color:#fca5a5}
+.itm{border-bottom:1px solid var(--border);padding:11px 0}.itm:last-child{border-bottom:none}
+.muted{color:var(--muted);font-size:.74rem}
+h2{font-size:1.15rem;margin-bottom:3px}
+.sub{color:var(--muted);font-size:.76rem;margin-bottom:12px}
+/* bottom nav */
+#nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:100}
+#nav button{flex:1;background:none;border:none;color:var(--muted);padding:9px 4px;font-size:.62rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:0}
+#nav button .ic{font-size:1.2rem}
+#nav button.on{color:var(--accent)}
+.page{display:none}.page.on{display:block}
+.seg{display:flex;gap:4px;background:var(--bg3);border-radius:9px;padding:3px;margin-bottom:12px}
+.seg button{flex:1;background:none;border:none;color:var(--muted);padding:7px;border-radius:7px;font-size:.74rem;font-weight:600;cursor:pointer}
+.seg button.on{background:var(--card);color:var(--text)}
+#toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;width:92%;max-width:420px}
+.tst{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);padding:10px 13px;border-radius:9px;font-size:.8rem;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- ===== ÉCRAN DE CONNEXION ===== -->
+<div id="gate" style="position:fixed;inset:0;z-index:5000;background:linear-gradient(135deg,#060606,#13100050 45%,#060606);display:flex;align-items:center;justify-content:center;padding:18px">
+  <div style="width:100%;max-width:360px;background:#191c28;border:1px solid #2a1f00;border-radius:16px;padding:26px;text-align:center">
+    <div style="color:var(--accent);font-weight:900;font-size:1.3rem">TX EXECUTRANSIT</div>
+    <div class="muted" style="margin-bottom:18px">Administration sécurisée</div>
+    <div style="text-align:left">
+      <label>Email</label><input id="g-mail" type="email" autocomplete="username" placeholder="cheftseli@gmail.com">
+      <label>Mot de passe</label><input id="g-pass" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" placeholder="••••••••">
+    </div>
+    <button class="btn" style="width:100%;margin-top:14px" onclick="doLogin()">🔓 Se connecter</button>
+    <button class="btn btn-gold2" style="width:100%;margin-top:8px" onclick="doSignup()">➕ Créer mon accès (1ʳᵉ fois)</button>
+    <div id="g-log" class="muted" style="margin-top:10px;min-height:16px"></div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app" style="display:none">
+<div class="wrap">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div><span style="color:var(--accent);font-weight:900">TX EXECUTRANSIT</span><div class="muted" id="who"></div></div>
+    <button class="btn-sm btn-ghost" onclick="loadAll()">🔄</button>
+  </div>
+
+  <!-- ACCUEIL -->
+  <div class="page on" id="p-home">
+    <div class="kpis" style="margin-bottom:12px">
+      <div class="kpi"><div class="v" style="color:var(--orange)" id="k-pending">0</div><div class="l">Réserv. en attente</div></div>
+      <div class="kpi"><div class="v" style="color:var(--green)" id="k-confirmed">0</div><div class="l">Missions confirmées</div></div>
+      <div class="kpi"><div class="v" style="color:var(--accent)" id="k-rev">0</div><div class="l">Revenus mois (RON)</div></div>
+      <div class="kpi"><div class="v" id="k-prospects">0</div><div class="l">Prospects à contacter</div></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong style="font-size:.9rem">📥 Réservations</strong><button class="btn-sm btn-gold2" onclick="openNewBooking()">+ Mission</button></div>
+      <div class="seg"><button class="on" onclick="fBook('',this)">Toutes</button><button onclick="fBook('pending',this)">En attente</button><button onclick="fBook('confirmed',this)">Confirmées</button><button onclick="fBook('done',this)">Terminées</button></div>
+      <div id="book-list"><div class="muted" style="text-align:center;padding:18px">Chargement…</div></div>
+    </div>
+  </div>
+
+  <!-- PROSPECTS -->
+  <div class="page" id="p-pros">
+    <h2>🎯 Prospects</h2><div class="sub">Démarchage & suivi des visites</div>
+    <select id="pro-filter" onchange="renderProspects()" style="margin-bottom:10px"><option value="">Tous statuts</option><option value="a_contacter">À contacter</option><option value="contacte">Contacté</option><option value="converti">Converti</option></select>
+    <div id="pros-list" class="card"><div class="muted" style="text-align:center;padding:18px">Chargement…</div></div>
+  </div>
+
+  <!-- SUIVI -->
+  <div class="page" id="p-track">
+    <h2>🛰️ Suivi live</h2><div class="sub">Partagez votre position en direct au client</div>
+    <div class="card">
+      <label>Mission à suivre</label>
+      <select id="track-booking"></select>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="track-btn" onclick="toggleShare()" style="flex:1">▶️ Démarrer le partage GPS</button>
+      </div>
+      <div id="track-info" class="muted" style="margin-top:10px"></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn-sm btn-gold2" style="flex:1" onclick="copyTrackLink()">📲 Copier le lien client</button>
+        <button class="btn-sm btn-ghost" style="flex:1" onclick="openTrackClient()">👁️ Ouvrir vue client</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLUS -->
+  <div class="page" id="p-more">
+    <h2>⚙️ Plus</h2><div class="sub">Outils & compte</div>
+    <div class="card">
+      <div class="row">
+        <a class="btn-sm btn-gold2" href="https://tseli485.github.io/executransit-portail/" target="_blank" style="flex:1;text-align:center;text-decoration:none;padding:11px">🌐 Voir le site client</a>
+        <button class="btn-sm btn-ghost" style="flex:1" onclick="loadAll()">🔄 Recharger les données</button>
+      </div>
+      <div class="muted" style="margin-top:12px">Chauffeurs : <span id="m-drivers">0</span> · Réservations : <span id="m-books">0</span> · Prospects : <span id="m-pros">0</span></div>
+      <button class="btn btn-ghost" style="width:100%;margin-top:14px" onclick="doLogout()">Se déconnecter</button>
+      <div class="muted" style="margin-top:10px;font-size:.66rem">🔒 Données chargées depuis Supabase après connexion. Aucune donnée stockée dans cette page.</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- NAV -->
+<div id="nav" style="display:none">
+  <button class="on" data-p="home" onclick="nav('home',this)"><span class="ic">🏠</span>Accueil</button>
+  <button data-p="pros" onclick="nav('pros',this)"><span class="ic">🎯</span>Prospects</button>
+  <button data-p="track" onclick="nav('track',this)"><span class="ic">🛰️</span>Suivi</button>
+  <button data-p="more" onclick="nav('more',this)"><span class="ic">⚙️</span>Plus</button>
+</div>
+
+<!-- MODAL nouvelle mission -->
+<div id="modal" style="display:none;position:fixed;inset:0;z-index:6000;background:rgba(0,0,0,.7);align-items:flex-end;justify-content:center">
+  <div style="width:100%;max-width:560px;background:var(--card);border-radius:16px 16px 0 0;padding:18px;max-height:90vh;overflow:auto">
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px"><strong>Nouvelle mission</strong><button class="btn-sm btn-ghost" onclick="closeModal()">✕</button></div>
+    <label>Client</label><input id="nb-client" placeholder="Nom du client">
+    <label>Type</label><select id="nb-type"><option value="aeroport">Transfert aéroport</option><option value="horaire">Corporatif (horaire)</option><option value="interurbain">Interurbain</option><option value="colis">Livraison colis</option></select>
+    <div class="row"><div style="flex:1"><label>Date</label><input id="nb-date" type="date"></div><div style="flex:1"><label>Heure</label><input id="nb-time" type="time" value="09:00"></div></div>
+    <label>Départ</label><input id="nb-dep" placeholder="Adresse départ">
+    <label>Arrivée</label><input id="nb-arr" placeholder="Adresse arrivée">
+    <label>Prix HT (RON)</label><input id="nb-price" type="number" placeholder="auto">
+    <button class="btn" style="width:100%;margin-top:14px" onclick="saveNewBooking()">✅ Créer la mission</button>
+  </div>
+</div>
+
+<script>
+const SB_URL='https://fkhztskoswdevhkiyiin.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZraHp0c2tvc3dkZXZoa2l5aWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNDU5MTQsImV4cCI6MjA5NTcyMTkxNH0.ETuFbk-uFzolSp9y3VadDAFnj_XFj-q_AnA-9QBC_Xk';
+const CLIENT_URL='https://tseli485.github.io/executransit-portail/';
+const PRICES={aeroport:181,horairePerH:165,kmPerKm:4.38,colis:59};
+let sb=null; try{sb=window.supabase.createClient(SB_URL,SB_KEY);}catch(e){}
+const g=id=>document.getElementById(id);
+let BOOKINGS=[],PROSPECTS=[],DRIVERS=[],VISITS={},bookFilter='';
+
+function toast(m,c){const d=document.createElement('div');d.className='tst';if(c==='er')d.style.borderLeftColor='#ef4444';if(c==='ok')d.style.borderLeftColor='#10b981';d.textContent=m;g('toast').appendChild(d);setTimeout(()=>{d.style.opacity='0';setTimeout(()=>d.remove(),300);},3000);}
+
+// ===== AUTH =====
+async function checkSession(){
+  if(!sb){g('g-log').textContent='Connexion indisponible (hors-ligne ?)';return;}
+  const {data}=await sb.auth.getSession();
+  if(data&&data.session){enterApp(data.session.user);}
+}
+async function doLogin(){
+  if(!sb)return;
+  const email=g('g-mail').value,pass=g('g-pass').value;
+  if(!email||!pass){g('g-log').textContent='Email + mot de passe requis';return;}
+  g('g-log').textContent='Connexion…';
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){g('g-log').textContent='❌ '+error.message;return;}
+  enterApp(data.user);
+}
+async function doSignup(){
+  if(!sb)return;
+  const email=g('g-mail').value,pass=g('g-pass').value;
+  if(!email||(pass||'').length<6){g('g-log').textContent='Email + mot de passe (6 caractères min.)';return;}
+  const {data,error}=await sb.auth.signUp({email,password:pass});
+  if(error){g('g-log').textContent='❌ '+error.message;return;}
+  if(data&&data.session)enterApp(data.user);
+  else g('g-log').textContent='📧 Compte créé. Validez l\'email reçu, puis « Se connecter ».';
+}
+async function doLogout(){await sb.auth.signOut();location.reload();}
+function enterApp(user){
+  g('gate').style.display='none';g('app').style.display='block';g('nav').style.display='flex';
+  g('who').textContent=user?user.email:'';
+  loadAll();
+}
+
+// ===== CHARGEMENT (depuis Supabase, authentifié) =====
+async function loadAll(){
+  if(!sb)return;
+  try{
+    const [b,p,d,v]=await Promise.all([
+      sb.from('bookings').select('*').order('created_at',{ascending:false}),
+      sb.from('prospects').select('*'),
+      sb.from('drivers').select('*'),
+      sb.from('visits').select('prospect_id,created_at')
+    ]);
+    BOOKINGS=b.data||[];PROSPECTS=p.data||[];DRIVERS=d.data||[];
+    VISITS={};(v.data||[]).forEach(x=>{if(!VISITS[x.prospect_id])VISITS[x.prospect_id]={n:0,last:x.created_at};VISITS[x.prospect_id].n++;if(x.created_at>VISITS[x.prospect_id].last)VISITS[x.prospect_id].last=x.created_at;});
+    renderHome();renderProspects();renderTrackOptions();
+    g('m-drivers').textContent=DRIVERS.length;g('m-books').textContent=BOOKINGS.length;g('m-pros').textContent=PROSPECTS.length;
+    toast('Données à jour ✓','ok');
+  }catch(e){toast('Erreur chargement: '+e.message,'er');}
+}
+
+// ===== ACCUEIL / RÉSERVATIONS =====
+function renderHome(){
+  const m=new Date().toISOString().slice(0,7);
+  const pending=BOOKINGS.filter(b=>b.status==='pending').length;
+  const confirmed=BOOKINGS.filter(b=>b.status==='confirmed').length;
+  const rev=BOOKINGS.filter(b=>(b.created_at||'').slice(0,7)===m||(b.scheduled_date||'').slice(0,7)===m).filter(b=>b.status!=='cancelled').reduce((s,b)=>s+(+b.estimated_price||0),0);
+  const toContact=PROSPECTS.filter(p=>p.status==='a_contacter').length;
+  g('k-pending').textContent=pending;g('k-confirmed').textContent=confirmed;
+  g('k-rev').textContent=Math.round(rev).toLocaleString('fr-FR');g('k-prospects').textContent=toContact;
+  renderBookList();
+}
+function fBook(f,btn){bookFilter=f;document.querySelectorAll('#p-home .seg button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderBookList();}
+function statusBadge(s){const m={pending:['b-o','En attente'],confirmed:['b-b','Confirmée'],done:['b-g','Terminée'],cancelled:['b-r','Annulée']};const x=m[s]||['b-o',s||'?'];return '<span class="bd '+x[0]+'">'+x[1]+'</span>';}
+function renderBookList(){
+  let data=BOOKINGS.slice();if(bookFilter)data=data.filter(b=>b.status===bookFilter);
+  if(!data.length){g('book-list').innerHTML='<div class="muted" style="text-align:center;padding:18px">Aucune réservation.</div>';return;}
+  g('book-list').innerHTML=data.map(b=>{
+    const drv=DRIVERS.find(d=>d.id===b.driver_id);
+    return '<div class="itm"><div style="display:flex;justify-content:space-between;gap:8px"><div style="min-width:0"><strong style="font-size:.86rem">'+(b.client_name||'Client')+'</strong> '+statusBadge(b.status)+'<div class="muted">'+svcLabel(b.service_type)+' · '+(b.scheduled_date||'')+' '+(b.scheduled_time||'')+'</div><div class="muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(b.pickup_address||'')+' → '+(b.dropoff_address||'')+'</div>'+(drv?'<div class="muted">🚗 '+drv.prenom+' '+drv.nom+'</div>':'')+'</div><div style="text-align:right;flex-shrink:0"><strong style="color:var(--accent)">'+(Math.round(b.estimated_price||0))+'</strong><div class="muted">RON</div></div></div>'+
+    '<div class="row" style="margin-top:8px">'+
+      (b.status==='pending'?'<button class="btn-sm btn-green" onclick="setBook(\''+b.id+'\',\'confirmed\')">✅ Confirmer</button>':'')+
+      (b.status==='confirmed'?'<button class="btn-sm btn-green" onclick="setBook(\''+b.id+'\',\'done\')">🏁 Terminer</button>':'')+
+      '<button class="btn-sm btn-ghost" onclick="assignDriver(\''+b.id+'\')">👤 Chauffeur</button>'+
+    '</div></div>';
+  }).join('');
+}
+function svcLabel(t){return {aeroport:'✈️ Aéroport',horaire:'🏢 Corporatif',interurbain:'🛣️ Interurbain',colis:'📦 Colis'}[t]||t||'—';}
+async function setBook(id,status){
+  const {error}=await sb.from('bookings').update({status}).eq('id',id);
+  if(error){toast(error.message,'er');return;}
+  const b=BOOKINGS.find(x=>x.id===id);if(b)b.status=status;renderHome();toast('Statut mis à jour ✓','ok');
+}
+async function assignDriver(id){
+  if(!DRIVERS.length){toast('Aucun chauffeur. Ajoutez-en un (à venir).','er');return;}
+  const names=DRIVERS.map((d,i)=>(i+1)+'. '+d.prenom+' '+d.nom).join('\n');
+  const pick=prompt('Assigner à :\n'+names+'\n\nNuméro :');
+  const idx=parseInt(pick)-1;if(isNaN(idx)||!DRIVERS[idx])return;
+  const {error}=await sb.from('bookings').update({driver_id:DRIVERS[idx].id}).eq('id',id);
+  if(error){toast(error.message,'er');return;}
+  const b=BOOKINGS.find(x=>x.id===id);if(b)b.driver_id=DRIVERS[idx].id;renderBookList();toast('Chauffeur assigné ✓','ok');
+}
+// nouvelle mission
+function openNewBooking(){g('nb-date').value=new Date().toISOString().slice(0,10);g('modal').style.display='flex';}
+function closeModal(){g('modal').style.display='none';}
+async function saveNewBooking(){
+  const type=g('nb-type').value;let price=+g('nb-price').value;
+  if(!price){price=type==='aeroport'?PRICES.aeroport:type==='colis'?PRICES.colis:type==='horaire'?PRICES.horairePerH:PRICES.kmPerKm*50;}
+  const row={client_name:g('nb-client').value||'Client',service_type:type,scheduled_date:g('nb-date').value,scheduled_time:g('nb-time').value,pickup_address:g('nb-dep').value,dropoff_address:g('nb-arr').value,estimated_price:price,status:'confirmed',source:'admin'};
+  const {error}=await sb.from('bookings').insert([row]);
+  if(error){toast(error.message,'er');return;}
+  closeModal();toast('Mission créée ✓','ok');loadAll();
+}
+
+// ===== PROSPECTS =====
+function priBadge(p){return {haute:'<span class="bd b-r">🔴 Haute</span>',moyenne:'<span class="bd b-o">🟡 Moyenne</span>',basse:'<span class="bd b-g">🟢 Basse</span>'}[p]||'';}
+function proStatusBadge(s){return {a_contacter:'<span class="bd b-b">À contacter</span>',contacte:'<span class="bd b-o">Contacté</span>',negocie:'<span class="bd b-o">Négociation</span>',converti:'<span class="bd b-g">Converti ✓</span>'}[s]||'';}
+function renderProspects(){
+  const f=g('pro-filter').value;
+  let data=PROSPECTS.slice();if(f)data=data.filter(p=>p.status===f);
+  data.sort((a,b)=>(VISITS[b.id]?.n||0)-(VISITS[a.id]?.n||0));
+  if(!data.length){g('pros-list').innerHTML='<div class="muted" style="text-align:center;padding:18px">Aucun prospect.</div>';return;}
+  g('pros-list').innerHTML=data.map(p=>{
+    const v=VISITS[p.id];
+    return '<div class="itm"><div style="display:flex;justify-content:space-between;gap:8px"><div style="min-width:0"><strong style="font-size:.84rem">'+p.soc+'</strong><div class="muted">'+(p.sec||'')+' '+priBadge(p.pri)+'</div></div><div style="text-align:right;flex-shrink:0">'+proStatusBadge(p.status)+(v?'<div style="margin-top:3px"><span class="bd b-g">👁️ '+v.n+'</span></div>':'')+'</div></div>'+
+    '<div class="row" style="margin-top:8px">'+
+      '<button class="btn-sm btn-gold2" onclick="outreach(\''+p.id+'\')">🔗 Lien & Message</button>'+
+      (p.status==='a_contacter'?'<button class="btn-sm btn-ghost" onclick="setPro(\''+p.id+'\',\'contacte\')">✅ Contacté</button>':'')+
+      (p.status!=='converti'?'<button class="btn-sm btn-green" onclick="setPro(\''+p.id+'\',\'converti\')">🏆 Converti</button>':'')+
+    '</div></div>';
+  }).join('');
+}
+async function setPro(id,status){
+  const {error}=await sb.from('prospects').update({status,last_contact:new Date().toISOString().slice(0,10)}).eq('id',id);
+  if(error){toast(error.message,'er');return;}
+  const p=PROSPECTS.find(x=>x.id===id);if(p)p.status=status;renderProspects();renderHome();toast('Mis à jour ✓','ok');
+}
+function outreach(id){
+  const p=PROSPECTS.find(x=>x.id===id);if(!p)return;
+  const link=CLIENT_URL+'?ref='+encodeURIComponent(id)+'&utm_source=demarchage';
+  const msg='Bonjour, je dirige EXECUTRANSIT (transport exécutif premium à Bucarest). '+(p.proposition_valeur||'Service sur mesure pour votre société.')+' Découvrez & réservez : '+link;
+  if(navigator.share){navigator.share({title:'EXECUTRANSIT',text:msg,url:link}).catch(()=>{});}
+  else{navigator.clipboard.writeText(msg).then(()=>toast('Message + lien copiés ✓','ok'));}
+}
+
+// ===== SUIVI GPS =====
+let watchId=null,shareBooking=null;
+function renderTrackOptions(){
+  const act=BOOKINGS.filter(b=>b.status==='confirmed'||b.status==='pending');
+  g('track-booking').innerHTML=act.length?act.map(b=>'<option value="'+b.id+'">'+(b.client_name||'Client')+' · '+(b.scheduled_date||'')+'</option>').join(''):'<option value="default">Mission de démonstration</option>';
+}
+function toggleShare(){
+  if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;shareBooking=null;g('track-btn').textContent='▶️ Démarrer le partage GPS';g('track-info').textContent='Partage arrêté.';return;}
+  if(!navigator.geolocation){toast('GPS non disponible','er');return;}
+  shareBooking=g('track-booking').value||'default';
+  g('track-btn').textContent='⏹️ Arrêter le partage';
+  watchId=navigator.geolocation.watchPosition(async pos=>{
+    const {latitude,longitude,speed}=pos.coords;
+    g('track-info').textContent='📍 '+latitude.toFixed(5)+', '+longitude.toFixed(5)+' — partagé en direct';
+    try{await sb.from('vehicle_positions').insert([{track_code:shareBooking,lat:latitude,lng:longitude,speed:Math.round((speed||0)*3.6)}]);}catch(e){}
+  },err=>{g('track-info').textContent='Erreur GPS: '+err.message;toast('Autorisez la localisation','er');},{enableHighAccuracy:true,maximumAge:5000});
+}
+function trackLink(){return CLIENT_URL+'?track='+encodeURIComponent(g('track-booking').value||'default');}
+function copyTrackLink(){const l=trackLink();navigator.clipboard.writeText(l).then(()=>toast('Lien client copié ✓','ok'));}
+function openTrackClient(){window.open(trackLink(),'_blank');}
+
+// ===== NAV =====
+function nav(p,btn){document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));g('p-'+p).classList.add('on');document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+
+// ===== INIT =====
+checkSession();
+</script>
+</body>
+</html>
