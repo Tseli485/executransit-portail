@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EXECUTRANSIT — Transport Exécutif Premium à Bucarest</title>
+<meta name="description" content="Chauffeur privé premium à Bucarest : transferts aéroport, transport corporatif, livraison express. Réservez en 2 minutes.">
+<style>
+:root{--bg:#08090d;--bg2:#0e1018;--bg3:#141720;--card:#191c28;--border:#232840;--accent:#F5A623;--accent2:#e8920f;--green:#10b981;--red:#ef4444;--text:#e7ebf0;--muted:#8a93a3}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding:18px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.g3,.g2{grid-template-columns:1fr}}
+input,select,textarea{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:.9rem;outline:none}
+input:focus,select:focus{border-color:var(--accent)}
+label{display:block;font-size:.74rem;color:var(--muted);margin-bottom:5px;margin-top:8px}
+.btn-gold{background:var(--accent);color:#000;font-weight:800;padding:13px 28px;border:none;border-radius:10px;cursor:pointer;font-size:.92rem;box-shadow:0 4px 18px rgba(245,166,35,.35);transition:transform .15s}
+.btn-gold:hover{transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:#fff;font-weight:700;padding:12px 22px;border:1px solid rgba(255,255,255,.2);border-radius:10px;cursor:pointer}
+.svc{cursor:pointer;transition:transform .18s,border-color .18s}
+.svc:hover{transform:translateY(-4px);border-color:rgba(245,166,35,.5)}
+.bd{display:inline-block;background:rgba(245,166,35,.15);color:var(--accent);padding:2px 8px;border-radius:8px;font-size:.66rem;margin:2px}
+.al{padding:12px;border-radius:8px;font-size:.84rem;margin-top:10px}
+.al-ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.35);color:#86efac}
+.al-er{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#fca5a5}
+.step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;flex-shrink:0}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+<!-- ===== APP NORMALE (réservation) ===== -->
+<div id="app">
+<div class="wrap">
+
+  <!-- HERO -->
+  <div style="background:linear-gradient(135deg,#060606,#15100050 45%,#060606);border:1px solid #2a1f00;border-radius:18px;padding:50px 30px 36px;text-align:center;position:relative;overflow:hidden;margin-bottom:18px">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% -10%,rgba(245,166,35,.22),transparent 60%)"></div>
+    <div style="position:relative">
+      <div style="display:inline-block;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);color:var(--accent);font-size:.64rem;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;padding:5px 14px;border-radius:30px;margin-bottom:16px">★ Premium Transport · Bucarest</div>
+      <h1 style="font-size:2.3rem;font-weight:900;margin-bottom:12px;line-height:1.1">Votre chauffeur exécutif<br><span style="background:linear-gradient(90deg,#F5A623,#ffd479);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">à Bucarest</span></h1>
+      <p style="color:#aab2c0;margin-bottom:24px;max-width:520px;margin-left:auto;margin-right:auto">Transferts aéroport, missions corporate et livraisons express.<br>Discrétion absolue · Ponctualité garantie · Facturation entreprise.</p>
+      <button class="btn-gold" onclick="document.getElementById('book').scrollIntoView({behavior:'smooth'})">✈️ Réserver en 2 minutes</button>
+      <div style="display:flex;gap:30px;justify-content:center;flex-wrap:wrap;margin-top:30px;padding-top:22px;border-top:1px solid rgba(255,255,255,.08)">
+        <div><div style="font-size:1.4rem;font-weight:900;color:var(--accent)">24/7</div><div style="font-size:.62rem;color:#7a8290;text-transform:uppercase">Disponibilité</div></div>
+        <div><div style="font-size:1.4rem;font-weight:900;color:var(--accent)">10 min</div><div style="font-size:.62rem;color:#7a8290;text-transform:uppercase">Avance garantie</div></div>
+        <div><div style="font-size:1.4rem;font-weight:900;color:var(--accent)">100%</div><div style="font-size:.62rem;color:#7a8290;text-transform:uppercase">Facturable B2B</div></div>
+        <div><div style="font-size:1.4rem;font-weight:900;color:var(--accent)">⭐ 4.9</div><div style="font-size:.62rem;color:#7a8290;text-transform:uppercase">Satisfaction</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <div style="text-align:center;margin-bottom:12px"><span style="color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:2px;font-weight:600">Nos services</span></div>
+  <div class="g3" style="margin-bottom:22px">
+    <div class="card svc" onclick="pickService('aeroport')"><div style="font-size:2rem">✈️</div><div style="font-weight:700;margin:6px 0">Transfert Aéroport</div><div style="color:var(--muted);font-size:.76rem">OTP · Băneasa · suivi de vol, accueil personnalisé.</div><div style="color:var(--accent);font-weight:700;font-size:.82rem;margin-top:8px">dès 180 RON</div></div>
+    <div class="card svc" onclick="pickService('horaire')"><div style="font-size:2rem">🏢</div><div style="font-weight:700;margin:6px 0">Transport Corporatif</div><div style="color:var(--muted);font-size:.76rem">Mise à disposition horaire. Facturation B2B.</div><div style="color:var(--accent);font-weight:700;font-size:.82rem;margin-top:8px">165 RON / heure</div></div>
+    <div class="card svc" onclick="pickService('colis')"><div style="font-size:2rem">📦</div><div style="font-weight:700;margin:6px 0">Livraison Express</div><div style="color:var(--muted);font-size:.76rem">Documents & colis urgents, &lt; 2h intra-Bucarest.</div><div style="color:var(--accent);font-weight:700;font-size:.82rem;margin-top:8px">dès 60 RON</div></div>
+  </div>
+
+  <!-- FLOTTE -->
+  <div style="text-align:center;margin-bottom:12px"><span style="color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:2px;font-weight:600">Notre flotte premium</span></div>
+  <div class="g3" style="margin-bottom:22px">
+    <div class="card"><div style="font-size:1.7rem">🚗</div><div style="font-weight:700;margin:5px 0">Berline Exécutive</div><div style="color:var(--muted);font-size:.74rem">Mercedes E / BMW 5 / Audi A6 · 3 pax</div><div style="margin-top:8px"><span class="bd">Wifi</span><span class="bd">Eau</span><span class="bd">Chargeurs</span></div></div>
+    <div class="card"><div style="font-size:1.7rem">🚙</div><div style="font-weight:700;margin:5px 0">SUV Premium</div><div style="color:var(--muted);font-size:.74rem">Mercedes GLE / BMW X5 · 4 pax · OTP famille</div><div style="margin-top:8px"><span class="bd">Espace +</span><span class="bd">Cuir</span><span class="bd">Discrétion</span></div></div>
+    <div class="card"><div style="font-size:1.7rem">🚐</div><div style="font-weight:700;margin:5px 0">Van VIP</div><div style="color:var(--muted);font-size:.74rem">Mercedes Classe V · 7 pax · délégations</div><div style="margin-top:8px"><span class="bd">7 places</span><span class="bd">Groupes</span><span class="bd">Bagages XL</span></div></div>
+  </div>
+
+  <!-- RÉSERVATION -->
+  <div class="card" id="book" style="margin-bottom:22px;border-color:rgba(245,166,35,.2)">
+    <div style="font-weight:700;font-size:1rem;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)">📋 Réservation</div>
+    <div style="display:flex;align-items:center;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:7px"><div id="d1" class="step-dot" style="background:var(--accent);color:#000">1</div><span style="font-size:.76rem;font-weight:600">Trajet</span></div>
+      <div style="flex:1;height:2px;background:var(--border);margin:0 8px" id="l1"></div>
+      <div style="display:flex;align-items:center;gap:7px;opacity:.45" id="w2"><div id="d2" class="step-dot" style="background:var(--bg3);border:2px solid var(--border);color:var(--muted)">2</div><span style="font-size:.76rem;font-weight:600">Contact</span></div>
+      <div style="flex:1;height:2px;background:var(--border);margin:0 8px" id="l2"></div>
+      <div style="display:flex;align-items:center;gap:7px;opacity:.45" id="w3"><div id="d3" class="step-dot" style="background:var(--bg3);border:2px solid var(--border);color:var(--muted)">3</div><span style="font-size:.76rem;font-weight:600">Confirmation</span></div>
+    </div>
+
+    <div id="s1">
+      <div class="g2">
+        <div><label>Type de prestation</label><select id="b-type" onchange="estPrice()">
+          <option value="aeroport">✈️ Transfert Aéroport</option>
+          <option value="horaire">🏢 Transport Corporatif (horaire)</option>
+          <option value="interurbain">🛣️ Interurbain (km)</option>
+          <option value="colis">📦 Livraison Express Colis</option>
+        </select></div>
+        <div><label id="b-vlabel">Distance (km)</label><input id="b-val" type="number" value="18" min="1" oninput="estPrice()"></div>
+        <div><label>Date souhaitée</label><input id="b-date" type="date"></div>
+        <div><label>Heure</label><input id="b-time" type="time" value="09:00"></div>
+        <div style="grid-column:1/-1"><label>Adresse de départ</label><input id="b-dep" placeholder="Ex: Hôtel InterContinental, Bd. Nicolae Bălcescu 4"></div>
+        <div style="grid-column:1/-1"><label>Adresse d'arrivée</label><input id="b-arr" placeholder="Ex: Aéroport Henri Coandă (OTP)"></div>
+      </div>
+      <div style="background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.22);border-radius:8px;padding:12px;margin-top:14px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:.74rem;color:var(--muted)">Estimation HT (indexée carburant)</span>
+        <strong style="color:var(--accent);font-size:1.2rem" id="b-price">—</strong>
+      </div>
+      <div style="text-align:right;margin-top:14px"><button class="btn-gold" onclick="goStep(2)">Suivant →</button></div>
+    </div>
+
+    <div id="s2" style="display:none">
+      <div class="g2">
+        <div><label>Nom complet *</label><input id="b-nom" placeholder="Jean Dupont"></div>
+        <div><label>Société</label><input id="b-soc" placeholder="Cabinet XYZ SRL"></div>
+        <div><label>Email *</label><input id="b-email" type="email" placeholder="contact@entreprise.com"></div>
+        <div><label>Téléphone *</label><input id="b-tel" placeholder="+40 7xx xxx xxx"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:14px"><button class="btn-ghost" onclick="goStep(1)">← Retour</button><button class="btn-gold" onclick="goStep(3)">Récapitulatif →</button></div>
+    </div>
+
+    <div id="s3" style="display:none">
+      <div id="b-recap" style="background:var(--bg3);border-radius:10px;padding:16px;font-size:.84rem;line-height:1.9"></div>
+      <div id="b-msg"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:14px" id="b-btns"><button class="btn-ghost" onclick="goStep(2)">← Retour</button><button class="btn-gold" id="b-submit" onclick="submitBooking()">✅ Confirmer la réservation</button></div>
+    </div>
+  </div>
+
+  <!-- POURQUOI -->
+  <div class="g3" style="margin-bottom:22px">
+    <div class="card" style="text-align:center"><div style="font-size:1.6rem">⏱️</div><div style="font-weight:700;font-size:.84rem;margin:5px 0">Ponctualité</div><div style="font-size:.72rem;color:var(--muted)">Présence 10 min avant. Suivi temps réel.</div></div>
+    <div class="card" style="text-align:center"><div style="font-size:1.6rem">🧾</div><div style="font-weight:700;font-size:.84rem;margin:5px 0">Facturation B2B</div><div style="font-size:.72rem;color:var(--muted)">Facture TVA RO. Contrats mensuels.</div></div>
+    <div class="card" style="text-align:center"><div style="font-size:1.6rem">⛽</div><div style="font-weight:700;font-size:.84rem;margin:5px 0">Prix transparent</div><div style="font-size:.72rem;color:var(--muted)">Indexation carburant, aucune surprise.</div></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="g3" style="margin-bottom:30px">
+    <div class="card" style="text-align:center"><div style="font-size:1.3rem">📞</div><div style="font-size:.7rem;color:var(--muted)">Téléphone</div><div style="font-weight:700;font-size:.85rem">+40 7xx xxx xxx</div></div>
+    <div class="card" style="text-align:center"><div style="font-size:1.3rem">✉️</div><div style="font-size:.7rem;color:var(--muted)">Email</div><div style="font-weight:700;font-size:.85rem">contact@executransit.ro</div></div>
+    <div class="card" style="text-align:center"><div style="font-size:1.3rem">📍</div><div style="font-size:.7rem;color:var(--muted)">Zone</div><div style="font-weight:700;font-size:.85rem">Bucarest & Roumanie</div></div>
+  </div>
+  <div style="text-align:center;color:var(--muted);font-size:.7rem;padding-bottom:20px">TX EXECUTRANSIT · Premium Transport Bucarest · © 2026</div>
+</div>
+</div>
+
+<!-- ===== MODE SUIVI CLIENT (?track=) ===== -->
+<div id="track-view" style="display:none;position:fixed;inset:0;background:#08090d;flex-direction:column">
+  <div style="padding:14px 18px;background:#0e1018;border-bottom:1px solid #232840;display:flex;align-items:center;gap:10px">
+    <span style="color:var(--accent);font-weight:800">TX EXECUTRANSIT</span>
+    <span style="color:#94a3b8;font-size:.8rem">· Suivi de votre véhicule en direct</span>
+    <span id="t-status" style="margin-left:auto;font-size:.72rem;color:#10b981">🟢 en direct</span>
+  </div>
+  <div id="track-map" style="flex:1"></div>
+  <div style="padding:10px 18px;background:#0e1018;border-top:1px solid #232840;font-size:.72rem;color:#94a3b8">Votre chauffeur arrive — la position se met à jour automatiquement.</div>
+</div>
+
+<script>
+// ===== CONFIG SUPABASE (clé anon publique, protégée par RLS) =====
+const SB_URL='https://fkhztskoswdevhkiyiin.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZraHp0c2tvc3dkZXZoa2l5aWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNDU5MTQsImV4cCI6MjA5NTcyMTkxNH0.ETuFbk-uFzolSp9y3VadDAFnj_XFj-q_AnA-9QBC_Xk';
+let sb=null; try{sb=window.supabase.createClient(SB_URL,SB_KEY);}catch(e){}
+
+const g=id=>document.getElementById(id);
+// Tarifs publics (alignés moteur de tarification — moyenne concurrents)
+const PRICES={aeroport:181,horairePerH:165,kmPerKm:4.38,colis:59};
+let step=1,data={};
+
+function pickService(t){g('b-type').value=t==='colis'?'colis':t;estPrice();g('book').scrollIntoView({behavior:'smooth'});}
+function estPrice(){
+  const t=g('b-type').value,val=parseFloat(g('b-val').value)||1;
+  g('b-vlabel').textContent=t==='horaire'?'Durée (heures)':'Distance (km)';
+  let p=0;
+  if(t==='aeroport')p=PRICES.aeroport;
+  else if(t==='horaire')p=Math.round(val*PRICES.horairePerH);
+  else if(t==='interurbain')p=Math.round(val*PRICES.kmPerKm);
+  else if(t==='colis')p=PRICES.colis;
+  data.price=p;g('b-price').textContent=p+' RON';
+}
+function goStep(n){
+  if(n===2&&(!g('b-date').value||!g('b-dep').value||!g('b-arr').value)){alert('Renseignez date, départ et arrivée.');return;}
+  if(n===2){data.type=g('b-type').value;data.val=g('b-val').value;data.date=g('b-date').value;data.time=g('b-time').value;data.dep=g('b-dep').value;data.arr=g('b-arr').value;}
+  if(n===3){
+    if(!g('b-nom').value||!g('b-email').value||!g('b-tel').value){alert('Nom, email et téléphone obligatoires.');return;}
+    data.nom=g('b-nom').value;data.soc=g('b-soc').value;data.email=g('b-email').value;data.tel=g('b-tel').value;
+    const lbl={aeroport:'✈️ Transfert Aéroport',horaire:'🏢 Transport Corporatif',interurbain:'🛣️ Interurbain',colis:'📦 Livraison Colis'};
+    g('b-recap').innerHTML='<div style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px">'+
+      '<span style="color:var(--muted)">Prestation</span><strong>'+lbl[data.type]+'</strong>'+
+      '<span style="color:var(--muted)">Date</span><strong>'+data.date+' à '+data.time+'</strong>'+
+      '<span style="color:var(--muted)">Départ</span><strong>'+data.dep+'</strong>'+
+      '<span style="color:var(--muted)">Arrivée</span><strong>'+data.arr+'</strong>'+
+      '<span style="color:var(--muted)">Client</span><strong>'+data.nom+(data.soc?' ('+data.soc+')':'')+'</strong>'+
+      '<span style="color:var(--muted)">Contact</span><strong>'+data.email+' · '+data.tel+'</strong></div>'+
+      '<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between"><span style="color:var(--muted)">Prix estimé HT</span><strong style="color:var(--accent);font-size:1.15rem">'+data.price+' RON</strong></div>';
+  }
+  step=n;[1,2,3].forEach(s=>g('s'+s).style.display=s===n?'block':'none');
+  [1,2,3].forEach(s=>{const d=g('d'+s),w=g('w'+s);
+    if(s<n){d.style.background='var(--green)';d.style.color='#fff';d.style.border='none';d.textContent='✓';}
+    else if(s===n){d.style.background='var(--accent)';d.style.color='#000';d.style.border='none';d.textContent=s;}
+    else{d.style.background='var(--bg3)';d.style.color='var(--muted)';d.style.border='2px solid var(--border)';d.textContent=s;}
+    if(w)w.style.opacity=s<=n?'1':'.45';
+  });
+  g('l1').style.background=n>=2?'var(--green)':'var(--border)';
+  g('l2').style.background=n>=3?'var(--green)':'var(--border)';
+}
+async function submitBooking(){
+  const payload={client_name:data.nom,company:data.soc||null,email:data.email,phone:data.tel,service_type:data.type,
+    pickup_address:data.dep,dropoff_address:data.arr,distance_km:data.type==='horaire'?null:+data.val,
+    duration_h:data.type==='horaire'?+data.val:null,estimated_price:data.price,status:'pending',
+    scheduled_date:data.date,scheduled_time:data.time,source:'portail-public'};
+  g('b-submit').disabled=true;g('b-submit').textContent='Envoi...';
+  let ok=false,err='';
+  if(sb){try{const r=await sb.from('bookings').insert([payload]);if(r.error)err=r.error.message;else ok=true;}catch(e){err=e.message;}}
+  else err='Connexion indisponible';
+  if(ok){
+    g('b-msg').innerHTML='<div class="al al-ok">✅ Réservation envoyée ! Nous vous confirmons sous 1h par téléphone ou email. Merci de votre confiance.</div>';
+    g('b-btns').style.display='none';
+  }else{
+    g('b-msg').innerHTML='<div class="al al-er">❌ Envoi impossible ('+err+'). Appelez-nous au +40 7xx xxx xxx.</div>';
+    g('b-submit').disabled=false;g('b-submit').textContent='✅ Réessayer';
+  }
+}
+
+// ===== MODE SUIVI CLIENT (?track=CODE) =====
+let _map=null,_marker=null,_trail=null;
+function startTrack(code){
+  g('app').style.display='none';g('track-view').style.display='flex';
+  if(!window.L)return;
+  _map=L.map('track-map').setView([44.4268,26.1025],12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(_map);
+  _trail=L.polyline([],{color:'#F5A623',weight:4}).addTo(_map);
+  setTimeout(()=>_map.invalidateSize(),200);
+  const upd=(lat,lng)=>{const ll=[+lat,+lng];if(!_marker){_marker=L.marker(ll,{icon:L.divIcon({html:'<div style="font-size:26px">🚗</div>',className:'',iconSize:[30,30],iconAnchor:[15,15]})}).addTo(_map);}else _marker.setLatLng(ll);_trail.addLatLng(ll);_map.setView(ll,15);};
+  if(sb){
+    sb.from('vehicle_positions').select('*').eq('track_code',code).order('created_at',{ascending:false}).limit(1)
+      .then(({data})=>{if(data&&data[0])upd(data[0].lat,data[0].lng);else g('t-status').innerHTML='⏳ en attente du départ';});
+    sb.channel('pub-track-'+Date.now())
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'vehicle_positions'},p=>{if(p.new&&p.new.track_code===code){upd(p.new.lat,p.new.lng);g('t-status').innerHTML='🟢 en direct';}})
+      .subscribe();
+  }
+}
+
+// ===== INIT =====
+(function(){
+  const trackCode=new URLSearchParams(location.search).get('track');
+  if(trackCode){startTrack(trackCode);return;}
+  g('b-date').value=new Date().toISOString().slice(0,10);
+  estPrice();
+})();
+</script>
+</body>
+</html>
