@@ -240,7 +240,14 @@ function startTrack(code){
   if(trackCode){startTrack(trackCode);return;}
   // Lien de démarchage ?ref=ID → enregistre la visite (relance ciblée côté CRM)
   const ref=params.get('ref');
-  if(ref&&sb){ try{ sb.from('visits').insert([{prospect_id:ref,ref:ref,user_agent:navigator.userAgent.slice(0,120)}]); }catch(e){} }
+  if(ref){
+    let tries=0;
+    (function logVisit(){
+      tries++;
+      if(sb){ sb.from('visits').insert([{prospect_id:ref,ref:ref,user_agent:navigator.userAgent.slice(0,120)}]).then(()=>{}).catch(()=>{}); }
+      else if(tries<20){ setTimeout(logVisit,300); }
+    })();
+  }
   g('b-date').value=new Date().toISOString().slice(0,10);
   estPrice();
 })();
